@@ -23,6 +23,7 @@ var Stopwatch = React.createClass({
         return {
             running: false,
             elapsedTime: 0,
+            previousTime: 0,
         }
     },
 
@@ -36,10 +37,21 @@ var Stopwatch = React.createClass({
 
     onTick: function(){
         console.log('onTick');
+
+        if(this.state.running){
+            var now = Date.now();
+            this.setState({
+                previousTime: now,
+                elapsedTime: this.state.elapsedTime + (now - this.state.previousTime),
+            });
+        }
     },
 
     onStart: function(){
-        this.setState({ running: true });
+        this.setState({
+            running: true,
+            previousTime: Date.now(),
+        });
     },
 
     onStop: function(){
@@ -47,16 +59,22 @@ var Stopwatch = React.createClass({
     },
 
     onReset: function(){
+        this.setState({
+            elapsedTime: 0,
+            previousTime: Date.now(),
+        });
     },
 
     render: function(){
+        var seconds = Math.floor(this.state.elapsedTime / 1000);
+
         // ternary statement (look it up)
         var startStop = this.state.running ? <button onClick={this.onStop}>Stop</button> : <button onClick={this.onStart}>Start</button>;
 
         return (
             <div className="stopwatch">
                 <h2>Stopwatch</h2>
-                <div className="stopwatch-time">0</div>
+                <div className="stopwatch-time">{seconds}</div>
                 { startStop }
                 <button onClick={this.onReset}>Reset</button>
             </div>
